@@ -32,7 +32,7 @@ public class myBot extends PircBot
 	
 	public myBot()
 	{
-		this.setName("Dictionary");
+		this.setName("dictionaryBot");
 	}
 	
 	public void onMessage(String channel, String sender, String login, String hostname, String message)
