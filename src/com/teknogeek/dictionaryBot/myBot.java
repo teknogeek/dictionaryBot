@@ -4,6 +4,7 @@ package com.teknogeek.dictionaryBot;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +27,7 @@ public class myBot extends PircBot
 	public IWordID wordID;
 	public IWord word;
 	public IIndexWord idxWord;
-	public String glossary, wordToDefine;
+	public String glossary, wordToDefine, UDwordToDefine;
 	public String[] UDResults;
 	public boolean wordFound;
 	
@@ -37,18 +38,18 @@ public class myBot extends PircBot
 	
 	public void onMessage(String channel, String sender, String login, String hostname, String message)
 	{
-		Pattern commandBase = Pattern.compile("^\\!define");
-		Matcher parameter = commandBase.matcher(message);
-		if (parameter.find())
+		try
 		{
-			String wordToDefine = new String("");
-			if (message.length() > 8)
+			String commandBase = message.substring(0, 8);
+			String UDcommandBase = message.substring(0, 10);
+			
+			if (message.length() > 8 && commandBase.equals("!define "))
 			{
+				String wordToDefine = new String("");
 				wordToDefine = message.substring(8);
 				try {
 					lookupWord(wordToDefine);
 				} catch (IOException e) {
-					e.printStackTrace();
 				}
 				
 				if(wordFound)
@@ -60,8 +61,68 @@ public class myBot extends PircBot
 					sendMessage(channel, glossary);
 				}
 			}
+			else if (message.length() > 10 && UDcommandBase.equals("!defineud "))
+			{
+				String UDwordToDefine = new String("");
+				
+				UDwordToDefine = message.substring(10);
+				
+				try {
+					UDlookupWord(UDwordToDefine);
+				} catch (IOException e) {
+				}
+				
+				if(wordFound)
+				{
+					sendMessage(channel, UDwordToDefine + ": " + glossary);
+				}
+				else
+				{
+					sendMessage(channel, glossary);
+				}
+			}
+			else
+			{
+				return;
+			}
+		} catch (StringIndexOutOfBoundsException e)
+		{
+			
 		}
 	}
+	
+	public void UDlookupWord(String wordToLookup) throws IOException
+	{
+		int i = 0;
+ 		UDResults = new String[10]; 
+		
+ 		String replaceString = wordToLookup.replace(" ", "+");
+ 		System.out.println(replaceString);
+ 		
+		URL url = new URL("http://api.urbandictionary.com/v0/define?term=" + wordToLookup.replace(" ", "+"));
+		try (InputStream is = url.openStream();
+			JsonParser parser = Json.createParser(is))
+			{
+				while (parser.hasNext())
+				{
+					Event e1 = parser.next();
+					if (e1 == Event.KEY_NAME)
+					{
+						switch (parser.getString())
+						{
+						 	case "definition":
+						 		parser.next();
+						 		UDResults[i] = parser.getString();
+						 		i += 1;
+						 		break;
+						}
+					}
+				}
+			}
+			glossary = UDResults[0];
+			wordFound = true;
+	}
+	
 	
 	@SuppressWarnings("unused")
 	public void lookupWord(String wordToLookup) throws IOException
@@ -86,7 +147,6 @@ public class myBot extends PircBot
 	 		UDResults = new String[10]; 
 			
 	 		String replaceString = wordToLookup.replace(" ", "+");
-	 		System.out.println(replaceString);
 	 		
 			URL url = new URL("http://api.urbandictionary.com/v0/define?term=" + wordToLookup.replace(" ", "+"));
 			try (InputStream is = url.openStream();
