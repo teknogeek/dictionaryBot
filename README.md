@@ -3,25 +3,22 @@ dictionaryBot
 
 A Simple IRC Dictionary Bot written in java
 
-=============
+#Usage:
 
-Usage: 
- 
-!define [word(s)]
-    -Uses Wordnet and falls back to Urban Dictionary
+    !define [word(s)]
 
-!defineud [word(s)]
-    -Forces Urban Dictionary 
-    
-=============
+Uses Wordnet and falls back to Urban Dictionary
 
-Links:
+    !defineud [word(s)]
 
-Wordnet: http://wordnet.princeton.edu/
-Urban Dictionary: http://urbandictionary.com
+Forces Urban Dictionary 
 
-=============
+#Links:
 
-License:
+[Wordnet](http://wordnet.princeton.edu/)
+
+[Urban Dictionary](http://urbandictionary.com)
+
+#License:
 
 MIT
