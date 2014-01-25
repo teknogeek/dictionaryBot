@@ -13,12 +13,14 @@ Usage:
 !defineud [word(s)]
     -Forces Urban Dictionary 
     
-
+=============
 
 Links:
 
 Wordnet: http://wordnet.princeton.edu/
 Urban Dictionary: http://urbandictionary.com
+
+=============
 
 License:
 
